@@ -1,0 +1,48 @@
+{
+  "name": "oganepa-ai-purchase-manager",
+  "version": "1.0.0",
+  "description": "This is the artificial intelligent application that handles purchases via whatsapp messaging using twilio-and-dialogflow integration.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node .",
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SiliconBear/oganepa-ai-purchase-manager.git"
+  },
+  "keywords": [
+    "Artificial",
+    "Intelligence",
+    "Twilio",
+    "Dialogflow",
+    "AI"
+  ],
+  "author": "Siliconbear",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SiliconBear/oganepa-ai-purchase-manager/issues"
+  },
+  "homepage": "https://github.com/SiliconBear/oganepa-ai-purchase-manager#readme",
+  "dependencies": {
+    "dialogflow": "^1.2.0",
+    "dotenv": "^8.2.0",
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^10.0.0",
+    "twilio": "^3.54.1"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.11.6",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-json": "^2.0.18",
+    "@types/koa-logger": "^3.1.1",
+    "@types/koa-router": "^7.4.1",
+    "@types/node": "^14.14.14",
+    "@types/twilio": "^2.11.0"
+  }
+}
