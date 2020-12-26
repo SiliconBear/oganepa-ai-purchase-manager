@@ -6,6 +6,7 @@ import * as logger from "koa-logger";
 import * as json from "koa-json";
 import * as bodyParser from "koa-bodyparser";
 import { twilioDialogflow } from "./twilio-dialogflow";
+import { dialogflowVerify } from "./dialogflow-verify";
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -18,8 +19,8 @@ interface HelloRequest {
   name: string;
 }
 
-// Hello world
-router.get("/ai-purchase-manager", twilioDialogflow);
+// Twilio-Dialogflow
+router.post("/ai-purchase-manager", twilioDialogflow);
 
 // Middlewares
 app.use(json());
