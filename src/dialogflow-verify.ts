@@ -1,25 +1,24 @@
-const Realm = require("realm");
-const twilio = require("twilio");
+import * as Realm from 'realm';
+import { Twilio } from 'twilio';
+import dialogflow from 'dialogflow';
+import { environment } from './environment';
 
 export const dialogflowVerify = async (ctx, next, extra) => {
-    const twilioClient = new twilio("AC3acbf174a401aad6d7cdb4a054d827a0", "196404774e6c449b21b9dd803356330e");
+    const twilioClient = new Twilio(environment.TWILIO_ACCOUNT__SID, environment.TWILIO_AUTH__TOKEN);
 
     const request = ctx.request;
     const body = request.body;
     const { intent, parameters, fulfillmentText } = extra;
-    
+
     await twilioClient.messages.create({
-        from: 'whatsapp:+14155238886',
+        from: environment.TWILIO_WHATSAPP__NUMBER,
         body: `${fulfillmentText}`,
         to: 'whatsapp:+46760009821'
     }).catch((e) => console.log(e));
 
-
-
-
-    const appId = "pawa-app-service-bjehx";
+    
     const appConfig = {
-        id: appId,
+        id: environment.REALM_APP_ID,
         timeout: 10000,
     };
 
@@ -40,20 +39,50 @@ export const dialogflowVerify = async (ctx, next, extra) => {
         .validateMeterNumber({
             billerId,
             meternumber,
-            serviceName: biller.serviceName 
+            serviceName: biller.serviceName
         }).catch(console.log);
 
     if (result) {
         await twilioClient.messages.create({
-            from: 'whatsapp:+14155238886',
+            from: environment.TWILIO_WHATSAPP__NUMBER,
             body: `Your meter details: \n ${meternumber} \n*${result.customerName.trim()}*\n ${result.customerAddress}`,
             to: 'whatsapp:+46760009821'
         }).catch((e) => console.log(e));
-        
-        // dialo
+
+
+        const dialogflowOptions = {
+            credentials: {
+                client_email: environment.DIALOGFLOW_CLIENT__EMAIL,
+                private_key: environment.DIALOGFLOW_PRIVATE__KEY
+            }
+        }
+
+        const sessionId = body.From;
+        const sessionClient = new dialogflow.SessionsClient(dialogflowOptions);
+        const sessionPath = sessionClient.sessionPath(environment.DIALOGFLOW_PROJECT__ID, sessionId);
+
+        const requestVariables = {
+            session: sessionPath,
+            queryInput: {
+                event: {
+                    name: "purchase-bridge",
+                    languageCode: 'en-US',
+                }
+            },
+        };
+
+        const responses = await sessionClient.detectIntent(requestVariables);
+        const resultr = responses[0].queryResult;
+
+        await twilioClient.messages.create({
+            from: environment.TWILIO_WHATSAPP__NUMBER,
+            body: resultr.fulfillmentText,
+            to: 'whatsapp:+46760009821'
+        }).catch((e) => console.log(e));
+
     }
 
     ctx.body = { message: "successful" };
 
-    await next();
+    return await next();
 }

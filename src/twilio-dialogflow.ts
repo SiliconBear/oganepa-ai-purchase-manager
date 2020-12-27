@@ -1,4 +1,9 @@
+
+import { Twilio } from 'twilio';
+import dialogflow from 'dialogflow';
 import { dialogflowVerify } from "./dialogflow-verify";
+import { environment } from './environment';
+
 
 enum SmsStatus {
     'received'
@@ -20,22 +25,20 @@ type TwilioWhatsappResponse = {
 }
 
 export const twilioDialogflow = async (ctx, next) => {
-    const dialogflow = require('dialogflow');
+    const twilioClient = new Twilio(environment.TWILIO_ACCOUNT__SID, environment.TWILIO_AUTH__TOKEN);
 
     const { Body, From } = <TwilioWhatsappResponse>ctx.request.body;
 
-    const projectId = "oganepa-299322";
-    const sessionId = From;
-
-    const options = {
+    const dialogflowOptions = {
         credentials: {
-            client_email: "oganepa-twilio@oganepa-299322.iam.gserviceaccount.com",
-            private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDplMiXbU2x2x52\nx7Umwevg1buCmOP8oLXPTibx+xxoho5MGRW+bu159hOzN0R5uU3qCBGqiE8d6Pd/\no3Ge04SGyq1yVvuvYFtnXQNzFuCtWInXlRHGxUrCiKLNGmJX/YAGwB4oPQDEdePQ\nVdm/ugynYHWMIiCQPfg+H/OM/yQn2zwNQVaMtZeQwAeT834gemrJaVWoggxg+r2g\n+vaVp8kKwc87FQVbcfQnL7EcoVxBeZhhasRctlGqSYn2hcM1SpjvyFQm8/YEg9x2\nhDRcCW0FVZM0by852Qa59/6HAh3/1MqVEEWw2dA0jxzoWeCLVhfnS9ouO6K9iZi/\nldEazOcVAgMBAAECggEAJXHOfkftbpeb2JrHNYFc2NwqhRMRaUwyGRuELsJ8mV0I\nrrZOwAp0U1rZaZ9wgLrt/JhyjI3xcPAJzRJcgoOR+THAgFXlXwXpYTaN+QMv3VoW\nLtMc2GqEQ4832f1iyow+29Ysf3LYDqZ/cMRydcPTh3l1HpPR+I2WoA7rMi0slJ7I\nHTdacqDfkVlSxmr70LtGcDCX5mTuKndgrhq9UJ8iyX/K1FPg7CGbgxSz3TMmMFEj\nCrfjUTEgtUuv5Vl6H7N9uRAMDbwaHTwAHxiohwGuG0QipjIBH2OLqXDXh5OTWJZx\nCtyLhIUblI7ImSdEb0k5M/FPEgxQIhe3538aaOXtOQKBgQD8/O4zdkXYJRiTGrCS\n3tNsihAj4RuVZtvJapCDdWSZ+TwEXISvjZZ+6O8VLKsDVLkacpQJ+3yd08P1kVxQ\nvYjyBSjUOEJP1rN9c9VMsztSRJSHx0at/9BxAQRM+XwSrCmIWU9k9esSbcD9iM6e\ng6B9yHCi9dkEjvIvC9lBmdJJrwKBgQDsXLQ5Np4Wy5b61vudiFa/lqea+L9kCMCT\nrtoQmfC9gKu/j2cG50iVDLu8sGNt2EBWRFgqMrjmm8mh0gyPiIfFHjzuqVdyMiYD\nN6/XDJt9zmTLCmg3gcD4CzPmwp3mxbY7n2A6nlvzr0H75XfrqO4SqQFAl8XWBXap\n52s5x9SAewKBgAmRy7TYoXW2mYJe/RThJuAxLMEer7tsA55P0J2YYDDO061ajo5R\nbcLpLrn/UYyztLjCYsUp5SHXM89jKznGoZp+BXhZlHCOr4VsT0IyeWj4PSIRsKO+\nTHUp067RtRbDumJ09mLcRoMQ8b7lYONwGS8I2PHhGM9qVNDgwtwPZHvzAoGAOobq\nCZDArJxVEl/RhjyQXniLoBAgNEEGjospbBryRbpqzNBRjqAOlPnGMv7qX/TAWZwq\nyKguqMvCrdM5UQFZvTGznNVJ1fkc+Ib9f56bkhddVfmJvNTgV4tOmsFuIAqtCS55\nwYoc8sZe7GTxwOTfrrcynC/4yPopXAD1yCT3NakCgYBCrmrts0OoPmNWlb4tOZ3o\nCGnu9kpilfxlMz1hwZ3T13cTotP5LTvNigW/GXpIg6f82YkQdIutTE0JIGlEjlBc\nibT+6c8LRSInjcG9uvHabdsD4cBTTCcrbg0mx2yto4TPgI0QiStd7S6xZgEFsdiE\nMO3oS5Pl4IZt7Dror45Tdg==\n-----END PRIVATE KEY-----\n"
+            client_email: environment.DIALOGFLOW_CLIENT__EMAIL,
+            private_key: environment.DIALOGFLOW_PRIVATE__KEY
         }
     }
 
-    const sessionClient = new dialogflow.SessionsClient(options);
-    const sessionPath = sessionClient.sessionPath(projectId, sessionId);
+    const sessionId = From;
+    const sessionClient = new dialogflow.SessionsClient(dialogflowOptions);
+    const sessionPath = sessionClient.sessionPath(environment.DIALOGFLOW_PROJECT__ID, sessionId);
 
     const request = {
         session: sessionPath,
@@ -60,15 +63,12 @@ export const twilioDialogflow = async (ctx, next) => {
         return await dialogflowVerify(ctx, next, result);
     }
 
-    const twilio = require("twilio");
-    const twilioClient = new twilio("AC3acbf174a401aad6d7cdb4a054d827a0", "196404774e6c449b21b9dd803356330e");
-
     await twilioClient.messages.create({
-        from: 'whatsapp:+14155238886',
+        from: environment.TWILIO_WHATSAPP__NUMBER,
         body: result.fulfillmentText,
         to: 'whatsapp:+46760009821'
     }).catch((e) => console.log(e));
-    
+
     ctx.body = result.fulfillmentText;
-    await next();
+    return await next();
 }

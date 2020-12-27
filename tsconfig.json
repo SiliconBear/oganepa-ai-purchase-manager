@@ -3,10 +3,10 @@
     "compilerOptions": {
         "outDir": "./dist",
         "lib": [
-            "es5",
-            "es6"
+            "ES5",
+            "ES6"
         ],
-        "target": "es6",
+        "target": "ES6",
         "module": "commonjs",
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,

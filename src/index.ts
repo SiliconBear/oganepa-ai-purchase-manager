@@ -6,18 +6,9 @@ import * as logger from "koa-logger";
 import * as json from "koa-json";
 import * as bodyParser from "koa-bodyparser";
 import { twilioDialogflow } from "./twilio-dialogflow";
-import { dialogflowVerify } from "./dialogflow-verify";
-
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
 
 const app = new Koa();
 const router = new Router();
-
-interface HelloRequest {
-  name: string;
-}
 
 // Twilio-Dialogflow
 router.post("/ai-purchase-manager", twilioDialogflow);
@@ -31,5 +22,5 @@ app.use(bodyParser());
 app.use(router.routes()).use(router.allowedMethods());
 
 app.listen(3000, () => {
-  console.log("Koa started");
+  console.log("Purchase manager started");
 });
