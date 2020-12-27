@@ -5,13 +5,14 @@ import * as Router from "koa-router";
 import * as logger from "koa-logger";
 import * as json from "koa-json";
 import * as bodyParser from "koa-bodyparser";
-import { twilioDialogflow } from "./twilio-dialogflow";
+import { twilioDialogflow } from "./intents/twilio-dialogflow";
+import { intentMiddleware } from "./middlewares/intent";
 
 const app = new Koa();
 const router = new Router();
 
 // Twilio-Dialogflow
-router.post("/ai-purchase-manager", twilioDialogflow);
+router.post("/ai-purchase-manager", intentMiddleware, twilioDialogflow);
 
 // Middlewares
 app.use(json());
