@@ -1,9 +1,9 @@
-import dialogflow from 'dialogflow';
+import { SessionsClient } from 'dialogflow';
 import { buildDialogflowEventRequest, buildDialogflowRequest, getDialogflowResponse } from '../utils';
 import { environment } from '../environment';
 import { TwilioWhatsappResponse } from '../types';
 
-export const intentMiddleware = async (ctx, next) => {
+export const dialogflowMiddleware = async (ctx, next) => {
 
     const { Body: receivedMessage, From: senderWhatsapp, To: twilioWhatsapp } = <TwilioWhatsappResponse>ctx.request.body;
     const twilioResponse = { receivedMessage, senderWhatsapp, twilioWhatsapp };
@@ -16,13 +16,16 @@ export const intentMiddleware = async (ctx, next) => {
     }
 
     const sessionId = senderWhatsapp;
-    const sessionClient = new dialogflow.SessionsClient(dialogflowOptions);
+    const sessionClient = new SessionsClient(dialogflowOptions);
     const sessionPath = sessionClient.sessionPath(environment.DIALOGFLOW_PROJECT__ID, sessionId);
 
     const request = buildDialogflowRequest(sessionPath, receivedMessage);
     const responses = await sessionClient.detectIntent(request);
 
+    console.log(responses);
+
     const dialogflowResponse = getDialogflowResponse(responses);
+    console.log(dialogflowResponse.intent);
 
     const detectIntent = async (contextMessage) => {
         const request = buildDialogflowRequest(sessionPath, contextMessage);

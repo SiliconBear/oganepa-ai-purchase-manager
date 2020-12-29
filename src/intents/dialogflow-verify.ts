@@ -3,17 +3,12 @@ import { Twilio } from 'twilio';
 import { environment } from '../environment';
 import { IntentDialogBody } from '../types';
 
-export const dialogflowVerify = async (ctx, next, extra) => {
+export const dialogflowVerify = async (ctx, next) => {
     const twilioClient = new Twilio(environment.TWILIO_ACCOUNT__SID, environment.TWILIO_AUTH__TOKEN);
 
     const { twilioResponse, dialogflowResponse, detectEvent } = <IntentDialogBody>ctx.request.body;
-    const { intent, parameters, fulfillmentText } = dialogflowResponse;
-
-    await twilioClient.messages.create({
-        from: twilioResponse.twilioWhatsapp,
-        body: `${fulfillmentText}`,
-        to: twilioResponse.senderWhatsapp
-    }).catch((e) => console.log(e));
+    const { parameters, fulfillmentText, allParameters } = dialogflowResponse;
+    console.log(allParameters.fields);
 
     const app = new Realm.App(environment.REALM_APP_ID);
     const credentials = Realm.Credentials.anonymous();
@@ -22,7 +17,7 @@ export const dialogflowVerify = async (ctx, next, extra) => {
     const mongodb = app.currentUser.mongoClient("mongodb-atlas");
 
     const billerId = parameters.fields.biller.stringValue;
-    const meternumber = parameters.fields.meternumber.stringValue;
+    const meternumber = allParameters.fields.meternumber.stringValue;
 
     const database = await mongodb.db("electricity-vending");
     const biller = await database.collection("issuers").findOne({ billerId })
@@ -47,7 +42,7 @@ export const dialogflowVerify = async (ctx, next, extra) => {
 
         await twilioClient.messages.create({
             from: twilioResponse.twilioWhatsapp,
-            body: resultr.fulfillmentText,
+            body: resultr.fulfillmentText.replace(/\\n/g, '\n'),
             to: twilioResponse.senderWhatsapp
         }).catch((e) => console.log(e));
 

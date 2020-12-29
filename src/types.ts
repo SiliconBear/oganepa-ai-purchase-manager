@@ -33,6 +33,7 @@ type DialogflowResponse = {
     intent: Intent
     fulfillmentText: string
     parameters: any
+    allParameters: any
 }
 
 export type IntentDialogBody = {
