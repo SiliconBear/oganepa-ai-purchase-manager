@@ -1,4 +1,5 @@
 import * as Realm from 'realm';
+import { struct } from 'pb-util';
 import { Twilio } from 'twilio';
 import { environment } from '../environment';
 import { IntentDialogBody } from '../types';
@@ -16,8 +17,8 @@ export const dialogflowVerify = async (ctx, next) => {
     const user = await app.logIn(credentials);
     const mongodb = app.currentUser.mongoClient("mongodb-atlas");
 
-    const billerId = parameters.fields.biller.stringValue;
-    const meternumber = allParameters.fields.meternumber.stringValue;
+    const { biller: billerId } = struct.decode(parameters);
+    const { meternumber } = struct.decode(allParameters);
 
     const database = await mongodb.db("electricity-vending");
     const biller = await database.collection("issuers").findOne({ billerId })
@@ -33,12 +34,18 @@ export const dialogflowVerify = async (ctx, next) => {
     if (result) {
         await twilioClient.messages.create({
             from: twilioResponse.twilioWhatsapp,
-            body: `Your meter details: \n ${meternumber} \n*${result.customerName.trim()}*\n ${result.customerAddress}`,
+            body: `Meter details:\n${meternumber}\n*${result.customerName.trim()}*\n${result.customerAddress}`,
             to: twilioResponse.senderWhatsapp
         }).catch((e) => console.log(e));
 
-
-        const resultr = await detectEvent("purchase-bridge");
+        const options = {
+            parameters: {
+                servicename: biller.serviceName
+            }
+        };
+        const resultr = await detectEvent("purchase-bridge", options);
+        console.log("---------------------------");
+        console.log(resultr);
 
         await twilioClient.messages.create({
             from: twilioResponse.twilioWhatsapp,

@@ -40,5 +40,5 @@ export type IntentDialogBody = {
     twilioResponse: TwilioResponse
     dialogflowResponse: DialogflowResponse
     detectIntent: (intent: string)=>any
-    detectEvent: (intent: string)=>any
+    detectEvent: (intent: string, options?: any)=>any
 }

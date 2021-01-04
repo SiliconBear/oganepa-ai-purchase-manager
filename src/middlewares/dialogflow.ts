@@ -22,10 +22,7 @@ export const dialogflowMiddleware = async (ctx, next) => {
     const request = buildDialogflowRequest(sessionPath, receivedMessage);
     const responses = await sessionClient.detectIntent(request);
 
-    console.log(responses);
-
     const dialogflowResponse = getDialogflowResponse(responses);
-    console.log(dialogflowResponse.intent);
 
     const detectIntent = async (contextMessage) => {
         const request = buildDialogflowRequest(sessionPath, contextMessage);
@@ -34,13 +31,13 @@ export const dialogflowMiddleware = async (ctx, next) => {
         return getDialogflowResponse(responses);
     }
 
-    const detectEvent = async (eventName) => {
-        const request = buildDialogflowEventRequest(sessionPath, eventName);
+    const detectEvent = async (eventName, options = {}) => {
+        const request = buildDialogflowEventRequest(sessionPath, eventName, options);
         const responses = await sessionClient.detectIntent(request);
 
         return getDialogflowResponse(responses);
     }
-    
+
     ctx.request.body = { twilioResponse, dialogflowResponse, detectIntent, detectEvent };
     return await next();
 }

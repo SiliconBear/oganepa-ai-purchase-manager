@@ -1,3 +1,5 @@
+import { struct } from 'pb-util';
+
 export const buildDialogflowRequest = (session, text) => ({
     session,
     queryInput: {
@@ -8,14 +10,15 @@ export const buildDialogflowRequest = (session, text) => ({
     },
 });
 
-export const buildDialogflowEventRequest = (session, eventName) => ({
+export const buildDialogflowEventRequest = (session, eventName, options) => ({
     session,
     queryInput: {
         event: {
             name: eventName,
             languageCode: 'en-US',
+            parameters: struct.encode(options.parameters)
         },
-    },
+    }
 });
 
 export const getDialogflowResponse = (responses) => {
@@ -33,7 +36,6 @@ export const getDialogflowResponse = (responses) => {
 }
 
 
-export const generatePaystackPaymentLink = (purchase) => {
-    const { _id, email, total, phone } = purchase
-    return `https://paystack.com/pay/oganepa?email=${encodeURIComponent(email)}&reference=${_id}&whatsapp=${phone}&amount=${total/100}`;
+export const generatePaymentReferenceLink = (_id) => {
+    return `http://test.oganepa.com/payment?reference=${_id}`;
 }
