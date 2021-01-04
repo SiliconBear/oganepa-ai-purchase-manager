@@ -34,7 +34,7 @@ export const dialogflowVerify = async (ctx, next) => {
     if (result) {
         await twilioClient.messages.create({
             from: twilioResponse.twilioWhatsapp,
-            body: `Meter details:\n${meternumber}\n*${result.customerName.trim()}*\n${result.customerAddress}`,
+            body: `Meter details:\n${meternumber}\n*${result.customerName.trim()}*\n_${result.customerAddress}_`,
             to: twilioResponse.senderWhatsapp
         }).catch((e) => console.log(e));
 
@@ -43,13 +43,11 @@ export const dialogflowVerify = async (ctx, next) => {
                 servicename: biller.serviceName
             }
         };
-        const resultr = await detectEvent("purchase-bridge", options);
-        console.log("---------------------------");
-        console.log(resultr);
 
+        const continuePurchaseIntent = await detectEvent("continue-purchase-intent", options);
         await twilioClient.messages.create({
             from: twilioResponse.twilioWhatsapp,
-            body: resultr.fulfillmentText.replace(/\\n/g, '\n'),
+            body: continuePurchaseIntent.fulfillmentText.replace(/\\n/g, '\n'),
             to: twilioResponse.senderWhatsapp
         }).catch((e) => console.log(e));
 
