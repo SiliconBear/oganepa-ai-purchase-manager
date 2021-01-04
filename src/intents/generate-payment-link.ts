@@ -20,9 +20,8 @@ export const generatePaymentLink = async (ctx, next) => {
 
     const { biller: billerId, meternumber, amount, servicename: serviceName } = struct.decode(allParameters);
     const { email } = struct.decode(parameters);
-    const total = parseInt(amount.toString()) * 100;
 
-    console.log({ billerId, meternumber, amount, email });
+    const total = parseInt(amount.toString()) * 100;
 
     const database = await mongodb.db("electricity-vending");
     const purchase: any = {

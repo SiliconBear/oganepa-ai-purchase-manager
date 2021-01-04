@@ -16,7 +16,7 @@ export const buildDialogflowEventRequest = (session, eventName, options) => ({
         event: {
             name: eventName,
             languageCode: 'en-US',
-            parameters: struct.encode(options.parameters)
+            parameters: options.parameters?struct.encode(options.parameters) : {}
         },
     }
 });
