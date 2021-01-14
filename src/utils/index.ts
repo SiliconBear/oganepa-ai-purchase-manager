@@ -1,4 +1,5 @@
 import { struct } from 'pb-util';
+import { environment } from '../environment';
 
 export const buildDialogflowRequest = (session, text) => ({
     session,
@@ -37,5 +38,5 @@ export const getDialogflowResponse = (responses) => {
 
 
 export const generatePaymentReferenceLink = (_id) => {
-    return `http://test.oganepa.com/payment?reference=${_id}`;
+    return `${environment.OGANEPA_BASE_URL}/payment?reference=${_id}`;
 }
