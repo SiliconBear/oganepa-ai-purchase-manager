@@ -1,25 +1,17 @@
 {
-    "version": "2.0.2",
-    "compilerOptions": {
-        "outDir": "./dist",
-        "lib": [
-            "ES5",
-            "ES6"
-        ],
-        "target": "ES6",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "node_modules/*",
-                "src/types/*"
-            ]
-        }
-    },
-    "include": [
-        "./src/**/*"
-    ]
+  "version": "2.0.2",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "lib": ["ES5", "ES6"],
+    "target": "ES6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    }
+  },
+  "include": ["./src/**/*"]
 }
