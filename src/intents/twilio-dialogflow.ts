@@ -11,7 +11,7 @@ export const twilioDialogflow = async (ctx, next) => {
     const twilioClient = new Twilio(environment.TWILIO_ACCOUNT__SID, environment.TWILIO_AUTH__TOKEN);
 
     const { twilioResponse, dialogflowResponse, detectIntent } = <IntentDialogBody>ctx.request.body;
-
+    
     await twilioClient.messages.create({
         from: twilioResponse.twilioWhatsapp,
         body: dialogflowResponse.fulfillmentText.replace(/\\n/g, '\n'),

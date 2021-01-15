@@ -9,7 +9,6 @@ export const dialogflowVerify = async (ctx, next) => {
 
     const { twilioResponse, dialogflowResponse, detectEvent } = <IntentDialogBody>ctx.request.body;
     const { parameters, fulfillmentText, allParameters } = dialogflowResponse;
-    console.log(allParameters.fields);
 
     const app = new Realm.App(environment.REALM_APP_ID);
     const credentials = Realm.Credentials.anonymous();
@@ -17,18 +16,18 @@ export const dialogflowVerify = async (ctx, next) => {
     const user = await app.logIn(credentials);
     const mongodb = app.currentUser.mongoClient("mongodb-atlas");
 
-    const { biller: billerId } = struct.decode(parameters);
+    const { biller } = struct.decode(parameters);
     const { meternumber } = struct.decode(allParameters);
 
     const database = await mongodb.db("electricity-vending");
-    const biller = await database.collection("issuers").findOne({ billerId })
+    const issuer = await database.collection("issuers").findOne({ biller })
         .catch(console.log);
 
     const result = await user.functions
         .validateMeterNumber({
-            billerId,
+            biller,
             meternumber,
-            serviceName: biller.serviceName
+            serviceName: issuer.serviceName
         }).catch(console.log);
 
     if (result) {
@@ -40,7 +39,7 @@ export const dialogflowVerify = async (ctx, next) => {
 
         const options = {
             parameters: {
-                servicename: biller.serviceName
+                servicename: issuer.serviceName
             }
         };
 

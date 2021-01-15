@@ -18,14 +18,14 @@ export const generatePaymentLink = async (ctx, next) => {
     const user = await app.logIn(credentials);
     const mongodb = app.currentUser.mongoClient("mongodb-atlas");
 
-    const { biller: billerId, meternumber, amount, servicename: serviceName } = struct.decode(allParameters);
+    const { biller, meternumber, amount, servicename: serviceName } = struct.decode(allParameters);
     const { email } = struct.decode(parameters);
 
     const total = parseInt(amount.toString()) * 100;
 
     const database = await mongodb.db("electricity-vending");
     const purchase: any = {
-        billerId,
+        biller,
         meternumber,
         total,
         status: "pending",
