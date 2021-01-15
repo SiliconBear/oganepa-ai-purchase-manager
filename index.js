@@ -1,2 +1,2 @@
-require('dotenv').config();
+require("dotenv").config();
 require("./dist/index.js");
