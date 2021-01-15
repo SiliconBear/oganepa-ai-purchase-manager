@@ -7,7 +7,17 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
+    "lint": "eslint . --max-warnings 0 --no-error-on-unmatched-pattern --ext ts,js",
+    "prettier": "prettier --write . --ignore-unknown",
     "test": "npm run test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*": "prettier --write . --ignore-unknown"
   },
   "repository": {
     "type": "git",
@@ -49,7 +59,18 @@
     "@types/node": "^14.14.19",
     "@types/realm": "^1.13.0",
     "@types/twilio": "^2.11.0",
+    "@typescript-eslint/eslint-plugin": "^4.13.0",
+    "@typescript-eslint/parser": "^4.13.0",
+    "eslint": "^7.17.0",
+    "eslint-config-airbnb-typescript-prettier": "^4.1.0",
+    "eslint-config-koa": "^2.0.2",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^5.0.0",
     "node-pre-gyp": "^0.17.0",
+    "prettier": "^2.2.1",
     "typescript": "^4.1.3"
   }
 }
