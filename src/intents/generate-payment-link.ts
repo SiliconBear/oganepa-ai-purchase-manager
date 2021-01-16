@@ -54,14 +54,12 @@ export const generatePaymentLink = async (
     .catch(console.log);
 
   if (insertedPurchase) {
-    purchase._id = insertedPurchase.insertedId;
+    const insertedPurchaseId = insertedPurchase.insertedId;
 
     await twilioClient.messages
       .create({
         from: twilioResponse.twilioWhatsapp,
-        body: `Pay here: ${generatePaymentReferenceLink(
-          insertedPurchase.insertedId
-        )}`,
+        body: `Pay here: ${generatePaymentReferenceLink(insertedPurchaseId)}`,
         to: twilioResponse.senderWhatsapp,
       })
       .catch((e) => console.log(e));
