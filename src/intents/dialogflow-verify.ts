@@ -33,6 +33,8 @@ export const dialogflowVerify = async (
     .collection("issuers")
     .findOne({ biller })
     .catch(console.log);
+  
+  console.log(issuer);
 
   const result = await user.functions
     .validateMeterNumber({
