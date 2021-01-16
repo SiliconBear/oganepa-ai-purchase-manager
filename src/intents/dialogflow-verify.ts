@@ -35,8 +35,9 @@ export const dialogflowVerify = async (
   const issuer = await database
     .collection("issuers")
     .findOne({ biller })
-    .catch(console.log);
-  
+    .then((result) => console.log("Result::-+==>", result))
+    .catch((err) => console.log("Err::-+==>", err));
+
   console.log(issuer);
 
   const result = await user.functions
