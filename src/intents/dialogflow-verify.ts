@@ -19,14 +19,11 @@ export const dialogflowVerify = async (
   >ctx.request.body;
   const { parameters, allParameters } = dialogflowResponse;
 
-  console.log(environment.REALM_APP_ID);
   const app = new Realm.App(environment.REALM_APP_ID);
   const credentials = Realm.Credentials.anonymous();
 
   const user = await app.logIn(credentials);
-  console.log(user);
   const mongodb = app.currentUser.mongoClient("mongodb-atlas");
-  console.log(mongodb);
 
   const { biller } = struct.decode(parameters);
   const { meternumber } = struct.decode(allParameters);
@@ -35,13 +32,7 @@ export const dialogflowVerify = async (
   const issuer = await database
     .collection("issuers")
     .findOne({ biller })
-    .then((result) => {
-      console.log("Result::-+==>", result);
-      return result;
-    })
-    .catch((err) => console.log("Err::-+==>", err));
-
-  console.log(issuer);
+    .catch(console.log);
 
   const result = await user.functions
     .validateMeterNumber({
