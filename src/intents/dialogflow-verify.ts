@@ -19,6 +19,7 @@ export const dialogflowVerify = async (
   >ctx.request.body;
   const { parameters, allParameters } = dialogflowResponse;
 
+  console.log(environment.REALM_APP_ID);
   const app = new Realm.App(environment.REALM_APP_ID);
   const credentials = Realm.Credentials.anonymous();
 
