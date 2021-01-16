@@ -1,4 +1,4 @@
-# oganepa-ai-purchase-manager
+# oganepa-ai-purchase-manager | ![Framework version](https://img.shields.io/github/package-json/dependency-version/siliconbear/oganepa-ai-purchase-manager/koa)
 
 This is the artificial intelligent application that handles purchases via whatsapp messaging using twilio-and-dialogflow integration.
 
