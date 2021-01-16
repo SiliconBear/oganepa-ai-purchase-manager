@@ -24,7 +24,9 @@ export const dialogflowVerify = async (
   const credentials = Realm.Credentials.anonymous();
 
   const user = await app.logIn(credentials);
+  console.log(user);
   const mongodb = app.currentUser.mongoClient("mongodb-atlas");
+  console.log(mongodb);
 
   const { biller } = struct.decode(parameters);
   const { meternumber } = struct.decode(allParameters);
