@@ -1,4 +1,5 @@
 import { SessionsClient } from "dialogflow";
+import { Context } from "koa";
 import {
   buildDialogflowEventRequest,
   buildDialogflowRequest,
@@ -7,7 +8,10 @@ import {
 import { environment } from "../environment";
 import { TwilioWhatsappResponse } from "../types";
 
-export const dialogflowMiddleware = async (ctx, next) => {
+export const dialogflowMiddleware = async (
+  ctx: Context,
+  next: () => unknown
+): Promise<unknown> => {
   const { Body: receivedMessage, From: senderWhatsapp, To: twilioWhatsapp } = <
     TwilioWhatsappResponse
   >ctx.request.body;
@@ -22,7 +26,7 @@ export const dialogflowMiddleware = async (ctx, next) => {
 
   const sessionId = senderWhatsapp;
   const sessionClient = new SessionsClient(dialogflowOptions);
-  
+
   const sessionPath = sessionClient.sessionPath(
     environment.DIALOGFLOW_PROJECT__ID,
     sessionId
@@ -33,22 +37,22 @@ export const dialogflowMiddleware = async (ctx, next) => {
 
   const dialogflowResponse = getDialogflowResponse(responses);
 
-  const detectIntent = async (contextMessage) => {
-    const request = buildDialogflowRequest(sessionPath, contextMessage);
-    const responses = await sessionClient.detectIntent(request);
+  const detectIntent = async (contextMessage: string) => {
+    const dialogRequest = buildDialogflowRequest(sessionPath, contextMessage);
+    const dialogResponses = await sessionClient.detectIntent(dialogRequest);
 
-    return getDialogflowResponse(responses);
+    return getDialogflowResponse(dialogResponses);
   };
 
-  const detectEvent = async (eventName, options = {}) => {
-    const request = buildDialogflowEventRequest(
+  const detectEvent = async (eventName: string, options = {}) => {
+    const dialogRequest = buildDialogflowEventRequest(
       sessionPath,
       eventName,
       options
     );
-    const responses = await sessionClient.detectIntent(request);
+    const dialogResponses = await sessionClient.detectIntent(dialogRequest);
 
-    return getDialogflowResponse(responses);
+    return getDialogflowResponse(dialogResponses);
   };
 
   ctx.request.body = {
@@ -57,5 +61,5 @@ export const dialogflowMiddleware = async (ctx, next) => {
     detectIntent,
     detectEvent,
   };
-  return await next();
+  return next();
 };

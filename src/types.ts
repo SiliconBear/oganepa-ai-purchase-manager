@@ -1,3 +1,5 @@
+import { JsonValue } from "pb-util/build";
+
 export enum SmsStatus {
   "received",
 }
@@ -32,8 +34,8 @@ type Intent = {
 type DialogflowResponse = {
   intent: Intent;
   fulfillmentText: string;
-  parameters: any;
-  allParameters: any;
+  parameters: Record<string, any>;
+  allParameters: Record<string, any>;
 };
 
 export type IntentDialogBody = {
@@ -42,3 +44,14 @@ export type IntentDialogBody = {
   detectIntent: (intent: string) => any;
   detectEvent: (intent: string, options?: any) => any;
 };
+
+export type Purchase = {
+  biller: JsonValue;
+  meternumber: JsonValue;
+  total: JsonValue;
+  status: JsonValue;
+  phone: JsonValue;
+  currency: JsonValue;
+  email: JsonValue;
+  serviceName: JsonValue;
+}

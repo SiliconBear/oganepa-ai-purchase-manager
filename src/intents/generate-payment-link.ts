@@ -1,11 +1,15 @@
 import * as Realm from "realm";
 import { struct } from "pb-util";
-import { generatePaymentReferenceLink } from "../utils";
 import { Twilio } from "twilio";
+import { Context, Next } from "koa";
+import { generatePaymentReferenceLink } from "../utils";
 import { environment } from "../environment";
-import { IntentDialogBody } from "../types";
+import { IntentDialogBody, Purchase } from "../types";
 
-export const generatePaymentLink = async (ctx, next) => {
+export const generatePaymentLink = async (
+  ctx: Context,
+  next: Next
+): Promise<unknown> => {
   const twilioClient = new Twilio(
     environment.TWILIO_ACCOUNT__SID,
     environment.TWILIO_AUTH__TOKEN
@@ -14,17 +18,12 @@ export const generatePaymentLink = async (ctx, next) => {
   const { twilioResponse, dialogflowResponse, detectEvent } = <
     IntentDialogBody
   >ctx.request.body;
-  const {
-    intent,
-    parameters,
-    fulfillmentText,
-    allParameters,
-  } = dialogflowResponse;
+  const { parameters, allParameters } = dialogflowResponse;
 
   const app = new Realm.App(environment.REALM_APP_ID);
   const credentials = Realm.Credentials.anonymous();
 
-  const user = await app.logIn(credentials);
+  await app.logIn(credentials);
   const mongodb = app.currentUser.mongoClient("mongodb-atlas");
 
   const {
@@ -35,10 +34,10 @@ export const generatePaymentLink = async (ctx, next) => {
   } = struct.decode(allParameters);
   const { email } = struct.decode(parameters);
 
-  const total = parseInt(amount.toString()) * 100;
+  const total = parseInt(amount.toString(), 10) * 100;
 
   const database = await mongodb.db("electricity-vending");
-  const purchase: any = {
+  const purchase: Purchase = {
     biller,
     meternumber,
     total,
@@ -48,6 +47,7 @@ export const generatePaymentLink = async (ctx, next) => {
     email,
     serviceName,
   };
+
   const insertedPurchase = await database
     .collection("purchases")
     .insertOne(purchase)
@@ -76,5 +76,5 @@ export const generatePaymentLink = async (ctx, next) => {
       .catch((e) => console.log(e));
   }
 
-  return await next();
+  return next();
 };

@@ -6,13 +6,14 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
   extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
+    "koa",
     "airbnb-typescript-prettier",
-    // "koa"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
   rules: {
+    "import/prefer-default-export": 0,
     "no-console": 1,
+    "no-underscore-dangle": 1
   },
 };

@@ -1,10 +1,14 @@
 import * as Realm from "realm";
 import { struct } from "pb-util";
 import { Twilio } from "twilio";
+import { Context, Next } from "koa";
 import { environment } from "../environment";
 import { IntentDialogBody } from "../types";
 
-export const dialogflowVerify = async (ctx, next) => {
+export const dialogflowVerify = async (
+  ctx: Context,
+  next: Next
+): Promise<unknown> => {
   const twilioClient = new Twilio(
     environment.TWILIO_ACCOUNT__SID,
     environment.TWILIO_AUTH__TOKEN
@@ -13,7 +17,7 @@ export const dialogflowVerify = async (ctx, next) => {
   const { twilioResponse, dialogflowResponse, detectEvent } = <
     IntentDialogBody
   >ctx.request.body;
-  const { parameters, fulfillmentText, allParameters } = dialogflowResponse;
+  const { parameters, allParameters } = dialogflowResponse;
 
   const app = new Realm.App(environment.REALM_APP_ID);
   const credentials = Realm.Credentials.anonymous();
@@ -24,7 +28,7 @@ export const dialogflowVerify = async (ctx, next) => {
   const { biller } = struct.decode(parameters);
   const { meternumber } = struct.decode(allParameters);
 
-  const database = await mongodb.db("electricity-vending");
+  const database = mongodb.db("electricity-vending");
   const issuer = await database
     .collection("issuers")
     .findOne({ biller })
@@ -68,5 +72,5 @@ export const dialogflowVerify = async (ctx, next) => {
       .catch((e) => console.log(e));
   }
 
-  return await next();
+  return next();
 };
