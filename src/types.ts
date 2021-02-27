@@ -4,26 +4,12 @@ export enum SmsStatus {
   "received",
 }
 
-export type TwilioWhatsappResponse = {
-  SmsMessageSid: string;
-  NumMedia: string;
-  SmsSid: string;
-  SmsStatus: SmsStatus;
-  Body: string;
-  // Our whatsapp numbeer (the recipient)
-  To: string;
-  NumSegments: string;
-  MessageSid: string;
-  AccountSid: string;
-  // Customer (the sender)
-  From: string;
-  ApiVersion: string;
-};
-
-type TwilioResponse = {
+type ChannelResponse = {
   receivedMessage: string;
   senderWhatsapp: string;
-  twilioWhatsapp: string;
+  channelWhatsapp: string;
+  platform: string;
+  origin: string;
 };
 
 type Intent = {
@@ -31,7 +17,7 @@ type Intent = {
   displayName: string;
 };
 
-type DialogflowResponse = {
+export type DialogflowResponse = {
   intent: Intent;
   fulfillmentText: string;
   parameters: Record<string, any>;
@@ -39,19 +25,61 @@ type DialogflowResponse = {
 };
 
 export type IntentDialogBody = {
-  twilioResponse: TwilioResponse;
+  channelResponse: ChannelResponse;
   dialogflowResponse: DialogflowResponse;
-  detectIntent: (intent: string) => any;
-  detectEvent: (intent: string, options?: any) => any;
+  detectIntent: (contextMessage: string) => Promise<Record<string, string>>;
+  detectEvent: (
+    eventName: string,
+    options?: Record<string, string | string | unknown>
+  ) => Promise<Record<string, string>>;
 };
 
-export type Purchase = {
-  biller: JsonValue;
-  meternumber: JsonValue;
-  total: JsonValue;
-  status: JsonValue;
-  phone: JsonValue;
-  currency: JsonValue;
-  email: JsonValue;
-  serviceName: JsonValue;
+enum MessageType {
+  CREATED = "message.created",
+  UPDATED = "message.updated",
 }
+
+export type Contact = {
+  attributes: Record<string, string>;
+  createdDatetime: string;
+  customDetails: Record<string, string>;
+  displayName: string;
+  firstName: string;
+  href: string;
+  id: string;
+  lastName: string;
+  msisdn: number;
+  updatedDatetime: string;
+};
+
+export type Message = {
+  channelId: string;
+  conversationId: string;
+  content: { text: string };
+  createdDatetime: string;
+  direction: string;
+  from: string;
+  id: string;
+  origin: string;
+  platform: string;
+  status: string;
+  to: string;
+  type: string;
+  updatedDatetime: string;
+};
+
+export type Conversation = {
+  contactId: string;
+  createdDatetime: string;
+  id: string;
+  lastReceivedDatetime: string;
+  status: string;
+  updatedDatetime: string;
+};
+
+export type MessageBirdBody = {
+  contact: Contact;
+  conversation: Conversation;
+  message: Message;
+  type: MessageType;
+};

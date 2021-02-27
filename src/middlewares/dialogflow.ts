@@ -6,16 +6,29 @@ import {
   getDialogflowResponse,
 } from "../utils";
 import { environment } from "../environment";
-import { TwilioWhatsappResponse } from "../types";
+import { MessageBirdBody } from "../types";
 
 export const dialogflowMiddleware = async (
   ctx: Context,
   next: () => unknown
 ): Promise<unknown> => {
-  const { Body: receivedMessage, From: senderWhatsapp, To: twilioWhatsapp } = <
-    TwilioWhatsappResponse
-  >ctx.request.body;
-  const twilioResponse = { receivedMessage, senderWhatsapp, twilioWhatsapp };
+  const {
+    message: {
+      content: { text: receivedMessage },
+      from: senderWhatsapp,
+      to: channelWhatsapp,
+      origin,
+      platform,
+    },
+  } = <MessageBirdBody>ctx.request.body;
+
+  const channelResponse = {
+    receivedMessage,
+    senderWhatsapp,
+    channelWhatsapp,
+    origin,
+    platform,
+  };
 
   const dialogflowOptions = {
     credentials: {
@@ -56,7 +69,7 @@ export const dialogflowMiddleware = async (
   };
 
   ctx.request.body = {
-    twilioResponse,
+    channelResponse,
     dialogflowResponse,
     detectIntent,
     detectEvent,
